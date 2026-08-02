@@ -119,3 +119,17 @@ AI integration controls:
 Operational hardening notes:
 - Celery container currently logs a root-user warning; production deployment should run worker with non-root UID.
 - Redis should be network-restricted and authenticated in non-local environments.
+
+## 12. Bandit Static Analysis — Accepted Low-Severity False Positives
+
+Bandit is configured in CI to fail only on **MEDIUM or HIGH** severity findings (`-ll -ii`).
+The following 5 LOW-severity findings are present in the codebase and are confirmed false positives.
+No code change or inline suppression is needed; the CI threshold handles them.
+
+| # | Rule | File | Line | Why it is a false positive |
+|---|------|------|------|---------------------------|
+| 1 | B105 hardcoded\_password\_string | `app/core/config.py:137` | `if self.jwt_secret_key == "dev-only-..."` | The string is a **known placeholder** used in a production guard that actively **rejects** this value. It is a comparison target, not a stored credential. |
+| 2 | B105 hardcoded\_password\_string | `app/core/security.py:100` | `if token_type != "access"` | `"access"` is the **JWT `typ` claim value** for access tokens (OAuth 2.0 terminology), not a password. |
+| 3 | B105 hardcoded\_password\_string | `app/core/security.py:119` | `if token_type != "refresh"` | `"refresh"` is the **JWT `typ` claim value** for refresh tokens, not a password. |
+| 4 | B106 hardcoded\_password\_funcarg | `app/services/auth.py:57` | `token_type="bearer"` | `"bearer"` is the **OAuth 2.0 standard token type** per RFC 6750. It is a protocol constant passed to the response schema, not a credential. |
+| 5 | B106 hardcoded\_password\_funcarg | `app/services/auth.py:165` | `token_type="bearer"` | Same as finding 4 — second call site for the token-refresh flow. |

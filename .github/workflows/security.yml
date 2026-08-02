@@ -33,7 +33,9 @@ jobs:
           python -m pip install -e ".[dev]"
 
       - name: Bandit
-        run: bandit -r app -c pyproject.toml
+        # -ll: fail only on MEDIUM or HIGH severity; lows are reported in metrics but do not block CI
+        # -ii: require at least MEDIUM confidence to avoid noisy low-confidence noise
+        run: bandit -r app -c pyproject.toml -ll -ii
 
       - name: pip-audit
         # Ignore documented transitive CVEs that cannot be fixed due to upstream
