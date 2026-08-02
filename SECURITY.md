@@ -91,7 +91,7 @@ Remaining unfixable transitive vulnerabilities (2 packages, 8 CVEs):
 - `ecdsa 0.19.2` is the latest release; no upstream fix version exists on PyPI.
 - Mitigation: `python-jose` uses `python-cryptography` as the primary signing backend; the `ecdsa` path is only used for EC key types not exercised in this project.
 
-**`starlette 0.52.1`** — PYSEC-2026-161, PYSEC-2026-248, PYSEC-2026-249, PYSEC-2026-2280, PYSEC-2026-2281 (+ 2 duplicates)
+**`starlette 0.52.1`** — PYSEC-2026-161, PYSEC-2026-248, PYSEC-2026-249, PYSEC-2026-2280, PYSEC-2026-2281 (+ 2 duplicates) / CVE-2026-48818, CVE-2026-54283
 - Pulled in by `prometheus-fastapi-instrumentator 7.1.0`, which pins `starlette<1.0.0`.
 - Fix versions exist (starlette ≥ 1.0.1 through 1.3.1), but installing them breaks the instrumentator's declared constraint.
 - Resolution path: upgrade `prometheus-fastapi-instrumentator` to a release that supports starlette 1.x, then upgrade starlette.

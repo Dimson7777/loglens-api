@@ -1,13 +1,19 @@
 # Documented transitive vulnerabilities that cannot be fixed without breaking
-# dependency constraints. See SECURITY.md §9 for full rationale.
+# dependency constraints. See SECURITY.md §9 and §13 for full rationale.
 
 # ecdsa 0.19.2 — via python-jose; no fix version exists on PyPI
 PYSEC-2026-1325
 
 # starlette 0.52.1 — via prometheus-fastapi-instrumentator 7.x (pins starlette<1.0.0)
 # Fix requires starlette>=1.0.1 which is incompatible with the instrumentator's constraint.
+# PYSEC IDs are used by the filesystem Trivy scan (OSV database).
 PYSEC-2026-161
 PYSEC-2026-248
 PYSEC-2026-249
 PYSEC-2026-2280
 PYSEC-2026-2281
+
+# CVE IDs are used by the Docker image Trivy scan (NVD database).
+# Same starlette 0.52.1 constraint — same upstream incompatibility applies.
+CVE-2026-48818
+CVE-2026-54283

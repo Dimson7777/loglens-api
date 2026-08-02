@@ -72,6 +72,7 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           trivyignores: .trivyignore
+          scanners: vuln
 
       - name: Secret scan
         uses: gitleaks/gitleaks-action@v2.3.7

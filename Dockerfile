@@ -19,7 +19,7 @@ RUN groupadd --gid ${APP_GID} ${APP_USER} \
 
 COPY --chown=${APP_UID}:${APP_GID} . .
 
-RUN pip install --upgrade pip \
+RUN pip install --upgrade pip "setuptools>=78.1.1" \
     && pip install .
 
 RUN chown -R ${APP_UID}:${APP_GID} ${APP_HOME} /home/${APP_USER} \
