@@ -17,12 +17,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: "pip"
+          cache-dependency-path: "pyproject.toml"
 
       - name: Install dependencies
         run: |
@@ -33,29 +36,42 @@ jobs:
         run: bandit -r app -c pyproject.toml
 
       - name: pip-audit
-        run: pip-audit
+        # Ignore documented transitive CVEs that cannot be fixed due to upstream
+        # dependency constraints. See SECURITY.md §9 for full rationale.
+        run: |
+          pip-audit \
+            --ignore-vuln PYSEC-2026-1325 \
+            --ignore-vuln PYSEC-2026-161 \
+            --ignore-vuln PYSEC-2026-248 \
+            --ignore-vuln PYSEC-2026-249 \
+            --ignore-vuln PYSEC-2026-2280 \
+            --ignore-vuln PYSEC-2026-2281
 
       - name: Build local image for Trivy
         run: docker build -t loglens-api:security .
 
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.25.0
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: fs
           scan-ref: .
           severity: CRITICAL,HIGH
           format: table
           exit-code: 1
+          ignore-unfixed: true
+          trivyignores: .trivyignore
 
       - name: Trivy image scan
-        uses: aquasecurity/trivy-action@0.25.0
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: loglens-api:security
           severity: CRITICAL,HIGH
           format: table
           exit-code: 1
+          ignore-unfixed: true
+          trivyignores: .trivyignore
 
       - name: Secret scan
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v2.3.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

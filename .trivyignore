@@ -1,0 +1,13 @@
+# Documented transitive vulnerabilities that cannot be fixed without breaking
+# dependency constraints. See SECURITY.md §9 for full rationale.
+
+# ecdsa 0.19.2 — via python-jose; no fix version exists on PyPI
+PYSEC-2026-1325
+
+# starlette 0.52.1 — via prometheus-fastapi-instrumentator 7.x (pins starlette<1.0.0)
+# Fix requires starlette>=1.0.1 which is incompatible with the instrumentator's constraint.
+PYSEC-2026-161
+PYSEC-2026-248
+PYSEC-2026-249
+PYSEC-2026-2280
+PYSEC-2026-2281

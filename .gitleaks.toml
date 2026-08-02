@@ -1,0 +1,5 @@
+# Allow placeholder values in the .env.example template file.
+# These are intentional non-secret example values, not real credentials.
+[allowlist]
+description = "Placeholder values in .env.example"
+paths = ['''.env.example''']

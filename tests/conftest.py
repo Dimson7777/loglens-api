@@ -2,7 +2,6 @@ import asyncio
 import os
 import sys
 from collections.abc import AsyncIterator, Awaitable, Callable
-from pathlib import Path
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -40,8 +39,7 @@ from app.repositories.user import UserRepository
 
 
 @pytest.fixture
-def test_database_url(tmp_path: Path) -> str:
-    del tmp_path
+def test_database_url() -> str:
     return os.environ.get(
         "TEST_DATABASE_URL",
         "postgresql+asyncpg://loglens:loglens@db:5432/loglens",

@@ -57,7 +57,7 @@ packages = ["app"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --strict-markers --basetemp=C:/Temp/pytest-loglens"
+addopts = "-ra --strict-markers"
 asyncio_mode = "auto"
 tmp_path_retention_policy = "failed"
 
