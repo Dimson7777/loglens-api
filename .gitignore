@@ -1,0 +1,55 @@
+# Environment — never commit real secrets
+.env
+.env.local
+.env.*.local
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Test and coverage artifacts
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+junit.xml
+.mypy_cache/
+.ruff_cache/
+
+# Celery runtime state
+celerybeat-schedule
+celerybeat.pid
+
+# Editor and OS
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docker volumes (local bind-mount data)
+docker/volumes/
+docker/data/
+*.sqlite3
+*.db
+
+# Log and scratch files
+*.log
+mypy_output.txt
+metrics.txt
+metrics2.txt

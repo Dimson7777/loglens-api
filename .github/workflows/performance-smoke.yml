@@ -1,0 +1,46 @@
+name: Performance Smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "performance/k6/**"
+      - "docker-compose.yml"
+      - "app/**"
+
+jobs:
+  k6-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start Docker stack
+        run: docker compose up -d --build
+
+      - name: Wait for API
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8000/health > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API did not become healthy in time"
+          exit 1
+
+      - name: Run k6 smoke scenario
+        uses: grafana/setup-k6-action@v1
+
+      - name: Execute smoke test
+        run: k6 run performance/k6/scenarios/smoke.js
+
+      - name: Compose logs (on failure)
+        if: failure()
+        run: docker compose logs --tail=300
+
+      - name: Shutdown stack
+        if: always()
+        run: docker compose down -v

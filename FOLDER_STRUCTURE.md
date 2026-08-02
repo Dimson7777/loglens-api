@@ -1,0 +1,108 @@
+# Proposed Folder Structure
+
+loglens-api/
+- app/
+  - api/
+    - dependencies/
+      - auth.py
+      - common.py
+    - routes/
+      - auth.py
+      - logs.py
+      - error_groups.py
+      - analytics.py
+      - system.py
+    - router.py
+  - core/
+    - config.py
+    - security.py
+    - logging.py
+    - rate_limit.py
+    - exceptions.py
+    - middleware.py
+  - database/
+    - base.py
+    - session.py
+  - models/
+    - user.py
+    - log.py
+    - error_group.py
+    - ai_analysis.py
+    - ingestion_job.py
+    - enums.py
+  - schemas/
+    - auth.py
+    - log.py
+    - error_group.py
+    - analytics.py
+    - ai_analysis.py
+    - common.py
+  - repositories/
+    - user_repository.py
+    - log_repository.py
+    - error_group_repository.py
+    - ai_analysis_repository.py
+    - ingestion_job_repository.py
+  - services/
+    - auth_service.py
+    - log_service.py
+    - error_group_service.py
+    - analytics_service.py
+    - fingerprint_service.py
+    - ai_analysis_service.py
+  - workers/
+    - celery_app.py
+    - tasks/
+      - log_tasks.py
+      - analysis_tasks.py
+      - cleanup_tasks.py
+      - analytics_tasks.py
+  - integrations/
+    - ai/
+      - base.py
+      - mock_provider.py
+      - openai_compatible_provider.py
+  - main.py
+- migrations/
+  - versions/
+- tests/
+  - unit/
+    - test_fingerprint_service.py
+    - test_auth_service.py
+    - test_ai_schema_validation.py
+  - integration/
+    - test_auth_api.py
+    - test_logs_api.py
+    - test_error_groups_api.py
+    - test_analytics_api.py
+    - test_health_endpoints.py
+  - repository/
+    - test_log_repository.py
+    - test_error_group_repository.py
+  - workers/
+    - test_log_tasks.py
+    - test_analysis_tasks.py
+  - fixtures/
+    - factories.py
+    - auth.py
+    - database.py
+- scripts/
+  - wait_for_db.py
+  - create_admin.py
+- .github/
+  - workflows/
+    - ci.yml
+- Dockerfile
+- docker-compose.yml
+- alembic.ini
+- pyproject.toml
+- .env.example
+- README.md
+- ARCHITECTURE.md
+- IMPLEMENTATION_PLAN.md
+- DATABASE_SCHEMA.md
+- API_SPEC.md
+- SECURITY.md
+- PYPROJECT_DEPENDENCY_PLAN.md
+- DOCKER_COMPOSE_PLAN.md
+- ENVIRONMENT_VARIABLES.md

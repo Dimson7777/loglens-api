@@ -1,0 +1,61 @@
+name: Security
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+  schedule:
+    - cron: "17 4 * * 1"
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Bandit
+        run: bandit -r app -c pyproject.toml
+
+      - name: pip-audit
+        run: pip-audit
+
+      - name: Build local image for Trivy
+        run: docker build -t loglens-api:security .
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.25.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: 1
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@0.25.0
+        with:
+          image-ref: loglens-api:security
+          severity: CRITICAL,HIGH
+          format: table
+          exit-code: 1
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
