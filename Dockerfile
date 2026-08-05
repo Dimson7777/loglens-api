@@ -19,8 +19,11 @@ RUN groupadd --gid ${APP_GID} ${APP_USER} \
 
 COPY --chown=${APP_UID}:${APP_GID} . .
 
+# pip is build-time only; removing it drops its vendored dependency tree
+# (pip/_vendor: msgpack, setuptools) from the runtime image.
 RUN pip install --upgrade pip "setuptools>=78.1.1" \
-    && pip install .
+    && pip install . \
+    && pip uninstall --yes pip
 
 RUN chown -R ${APP_UID}:${APP_GID} ${APP_HOME} /home/${APP_USER} \
     && chmod 750 ${APP_HOME} \
