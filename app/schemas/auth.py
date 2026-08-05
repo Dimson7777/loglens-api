@@ -25,6 +25,19 @@ class LoginResponse(BaseModel):
     token: TokenResponse
 
 
+class OAuth2TokenResponse(BaseModel):
+    """Flat RFC 6749 token payload for the OAuth2 password flow used by Swagger UI.
+
+    Swagger reads `access_token` from the top level of the response, so this
+    cannot reuse the nested `LoginResponse` shape.
+    """
+
+    access_token: str
+    token_type: str
+    expires_in: int
+    refresh_token: str
+
+
 class RefreshRequest(BaseModel):
     refresh_token: str
 

@@ -14,7 +14,7 @@ from app.models.user import User, UserRole
 from app.services.auth import AuthService
 from app.services.users import UserService
 
-_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 
 def get_rate_limiter() -> LoginRateLimiter:

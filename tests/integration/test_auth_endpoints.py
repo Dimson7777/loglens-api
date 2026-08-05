@@ -78,6 +78,96 @@ async def test_invalid_password_login(async_client: AsyncClient) -> None:
     assert bad_login_response.json()["error"]["code"] == "authentication_failed"
 
 
+async def test_oauth2_token_form_login_success_and_me(async_client: AsyncClient) -> None:
+    await async_client.post(
+        "/api/v1/auth/register",
+        json={"email": "swagger@example.com", "password": "supersecurepass"},
+    )
+
+    token_response = await async_client.post(
+        "/api/v1/auth/token",
+        data={"username": "swagger@example.com", "password": "supersecurepass"},
+    )
+    assert token_response.status_code == 200
+    assert token_response.request.headers["content-type"] == "application/x-www-form-urlencoded"
+
+    payload = token_response.json()
+    assert payload["token_type"] == "bearer"
+    assert isinstance(payload["access_token"], str)
+    assert payload["access_token"]
+    assert payload["expires_in"] > 0
+
+    me_response = await async_client.get(
+        "/api/v1/auth/me",
+        headers=_auth_header(str(payload["access_token"])),
+    )
+
+    assert me_response.status_code == 200
+    assert me_response.json()["email"] == "swagger@example.com"
+
+
+async def test_oauth2_token_form_login_rejects_invalid_password(async_client: AsyncClient) -> None:
+    await async_client.post(
+        "/api/v1/auth/register",
+        json={"email": "swaggerbad@example.com", "password": "supersecurepass"},
+    )
+
+    response = await async_client.post(
+        "/api/v1/auth/token",
+        data={"username": "swaggerbad@example.com", "password": "wrongpassword"},
+    )
+
+    assert response.status_code == 401
+    assert response.json()["error"]["code"] == "authentication_failed"
+
+
+async def test_oauth2_token_form_login_rejects_unknown_email(async_client: AsyncClient) -> None:
+    response = await async_client.post(
+        "/api/v1/auth/token",
+        data={"username": "nobody@example.com", "password": "supersecurepass"},
+    )
+
+    assert response.status_code == 401
+    assert response.json()["error"]["code"] == "authentication_failed"
+
+
+async def test_oauth2_token_form_rejects_malformed_username(async_client: AsyncClient) -> None:
+    """A non-email username or short password is a credential failure, not a 500."""
+    malformed_username = await async_client.post(
+        "/api/v1/auth/token",
+        data={"username": "not-an-email", "password": "supersecurepass"},
+    )
+    short_password = await async_client.post(
+        "/api/v1/auth/token",
+        data={"username": "swaggershort@example.com", "password": "short"},
+    )
+
+    assert malformed_username.status_code == 401
+    assert malformed_username.json()["error"]["code"] == "authentication_failed"
+    assert short_password.status_code == 401
+    assert short_password.json()["error"]["code"] == "authentication_failed"
+
+
+async def test_oauth2_token_form_login_respects_inactive_user(
+    async_client: AsyncClient,
+    user_factory: Callable[..., Awaitable[User]],
+) -> None:
+    await user_factory(
+        email="swaggerinactive@example.com",
+        password="supersecurepass",
+        role=UserRole.DEVELOPER,
+        is_active=False,
+    )
+
+    response = await async_client.post(
+        "/api/v1/auth/token",
+        data={"username": "swaggerinactive@example.com", "password": "supersecurepass"},
+    )
+
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "inactive_user"
+
+
 async def test_inactive_user_login(
     async_client: AsyncClient,
     user_factory: Callable[..., Awaitable[User]],
